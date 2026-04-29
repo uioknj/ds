@@ -1,0 +1,33 @@
+name: Build and Push Docker Image
+
+# 触发条件：当代码推送到 main 或 master 分支时自动执行
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 使用 GitHub 免费提供的 Ubuntu 环境
+
+    steps:
+      # 1. 获取仓库代码
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # 2. 登录到 Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 3. 构建并推送镜像
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          # 打包后的镜像名字：你的用户名/ds:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/ds:latest 
